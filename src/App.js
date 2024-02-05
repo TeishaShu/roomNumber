@@ -1,9 +1,14 @@
 import React from "react";
+import RoomAllocation from "./components/RoomAllocation"
 
 function App() {
   return (
     <div className="App">
-      1111111
+      <RoomAllocation
+        guest={10}
+        room={3}
+        onChange={result => console.log(result)}
+      />
     </div>
   );
 }
