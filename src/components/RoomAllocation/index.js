@@ -6,7 +6,14 @@ const RoomAllocation = (props) => {
   const [orderData, setOrderData] = useState([])
   const [remainGuest, setRemainGuest] = useState(guest)
 
-
+  useEffect(() => {
+    const defaultOrder = Array.from({ length: room }, (_, index) => ({
+      adult: 1,
+      child: 0,
+      ui_id: `room${index}`
+    }));
+    setOrderData(defaultOrder)
+  }, [])
 
   return (
     <div style={{ width: '350px' }}>
@@ -20,7 +27,7 @@ const RoomAllocation = (props) => {
         const childStep = 1;
         return (
           <div className="roomWrapper" key={el.ui_id}>
-            <div className="title">房間：0人</div>
+            <div className="title">房間：{el.adult + el.child}人</div>
             <div className="itemWrapper">
               <div className="itemLabel">
                 大人
@@ -28,7 +35,7 @@ const RoomAllocation = (props) => {
               </div>
               <CustomInputNumber
                 min={adultMin}
-                max={99}
+                max={roomPeople}
                 step={adultStep}
                 name="adult"
                 value={el.adult}
@@ -43,7 +50,7 @@ const RoomAllocation = (props) => {
               </div>
               <CustomInputNumber
                 min={childMin}
-                max={99}
+                max={roomPeople}
                 step={childStep}
                 name="child"
                 value={el.child}
