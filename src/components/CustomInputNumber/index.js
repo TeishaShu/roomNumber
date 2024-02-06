@@ -7,25 +7,24 @@ const CustomInputNumber = (props) => {
   const maxDisabled = useMemo(() => { return inputNumber >= max }, [max, inputNumber])
   let timerId = null;
 
-  const handleDecrease = () => {
-    if (!timerId) {
-      setInputNumber(inputNumber - step)
-      return
-    }
+  const handleDecrease = (event) => {
+    const value = inputNumber - step;
+    setInputNumber(value)
+    updateInputNumber(event, value)
 
     timerId = setInterval(() => {
-      setInputNumber(inputNumber - step)
-    }, 700);
+      setInputNumber(pre => pre - step)
+    }, 300);
   }
-  const handleIncrease = () => {
-    // console.log({ timerId });
-
-    setInputNumber(inputNumber + step)
+  const handleIncrease = (event) => {
+    const value = inputNumber + step;
+    setInputNumber(value)
+    updateInputNumber(event, value)
 
 
     timerId = setInterval(() => {
-      setInputNumber(inputNumber + step)
-    }, 700);
+      setInputNumber(pre => pre + step)
+    }, 300);
   }
 
   const handleOnBlur = () => {
@@ -35,6 +34,12 @@ const CustomInputNumber = (props) => {
 
   const stopCalculate = () => {
     clearInterval(timerId);
+  }
+
+  const updateInputNumber = (event, updateValue) => {
+    event.target.name = name;
+    event.target.value = updateValue;
+    onChange(event)
   }
 
   return (
