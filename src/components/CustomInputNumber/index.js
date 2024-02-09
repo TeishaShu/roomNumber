@@ -3,37 +3,57 @@ import React, { useState, useMemo, useEffect } from "react";
 const CustomInputNumber = (props) => {
   const { min = 0, max, step = 1, name, value, disabled, onChange, onBlur } = props;
   const [inputNumber, setInputNumber] = useState(value || 0);
+  const [timerId, setTimerId] = useState(null);
   const minDisabled = useMemo(() => { return inputNumber <= min }, [min, inputNumber])
   const maxDisabled = useMemo(() => { return inputNumber >= max }, [max, inputNumber])
-  let timerId = null;
+  useEffect(() => {
+    if (minDisabled || maxDisabled) {
+      stopCalculate()
+    }
+  }, [minDisabled, maxDisabled])
 
   const handleDecrease = (event) => {
-    const value = inputNumber - step;
+    const value = Math.max(min, inputNumber - step);
     setInputNumber(value)
     updateInputNumber(event, value)
 
-    timerId = setInterval(() => {
-      setInputNumber(pre => pre - step)
+    const timerId = setInterval(() => {
+      setInputNumber(pre => {
+        const value = Math.max(min, pre - step);
+        updateInputNumber(event, value)
+        return value;
+      })
     }, 300);
+    setTimerId(timerId)
   }
+
   const handleIncrease = (event) => {
-    const value = inputNumber + step;
+    const value = Math.min(max, inputNumber + step);
     setInputNumber(value)
     updateInputNumber(event, value)
 
-
-    timerId = setInterval(() => {
-      setInputNumber(pre => pre + step)
+    const timerId = setInterval(() => {
+      setInputNumber(pre => {
+        const value = Math.min(max, pre + step);
+        updateInputNumber(event, value)
+        return value;
+      })
     }, 300);
+    setTimerId(timerId)
   }
 
-  const handleOnBlur = () => {
+  const handleOnBlur = (event) => {
     stopCalculate()
-    onBlur()
+    event.target.name = name;
+    event.target.value = Number(inputNumber);
+    onBlur(event)
   }
 
   const stopCalculate = () => {
-    clearInterval(timerId);
+    if (timerId) { //
+      clearInterval(timerId);
+      setTimerId(null) //
+    }
   }
 
   const updateInputNumber = (event, updateValue) => {
@@ -58,8 +78,8 @@ const CustomInputNumber = (props) => {
         type="number"
         name={name}
         value={inputNumber}
-        min={minDisabled}
-        max={maxDisabled}
+        min={min}
+        max={max}
         onChange={() => { }}
         onBlur={handleOnBlur}
       />
