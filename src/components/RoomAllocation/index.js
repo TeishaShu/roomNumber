@@ -15,6 +15,29 @@ const RoomAllocation = (props) => {
     setOrderData(defaultOrder)
   }, [])
 
+  const handleOnChange = (event, ui_id) => {
+    const value = event.target.value;
+    const name = event.target.name;
+    setOrderData(pre => {
+      const updateArr = JSON.parse(JSON.stringify(pre))
+      const updateIdx = updateArr.findIndex(el => el.ui_id === ui_id)
+      updateArr[updateIdx][name] = Number(value);
+      updateRemain(updateArr)
+      onChange(updateArr)
+      return updateArr
+    })
+  }
+
+  const updateRemain = (updateArr) => {
+    const total = updateArr.reduce((accumulator, current) => accumulator + Number(current.adult) + Number(current.child), 0)
+    setRemainGuest(guest - total)
+  }
+
+  const fullRoom = (roomPeople, el) => {
+    const currentPeople = Number(el.adult) + Number(el.child)
+    return currentPeople >= roomPeople
+  }
+
   return (
     <div style={{ width: '350px' }}>
       <div className="title">住客人數: {guest}人/{room}房</div>
@@ -27,7 +50,7 @@ const RoomAllocation = (props) => {
         const childStep = 1;
         return (
           <div className="roomWrapper" key={el.ui_id}>
-            <div className="title">房間：{el.adult + el.child}人</div>
+            <div className="title">房間：{Number(el.adult) + Number(el.child)}人</div>
             <div className="itemWrapper">
               <div className="itemLabel">
                 大人
@@ -39,8 +62,8 @@ const RoomAllocation = (props) => {
                 step={adultStep}
                 name="adult"
                 value={el.adult}
-                disabled={false}//人數滿
-                onChange={event => { }}
+                disabled={fullRoom(roomPeople, el) || remainGuest <= 0}//人數滿
+                onChange={event => handleOnChange(event, el.ui_id)}
                 onBlur={event => { }}
               />
             </div>
@@ -54,8 +77,8 @@ const RoomAllocation = (props) => {
                 step={childStep}
                 name="child"
                 value={el.child}
-                disabled={false}
-                onChange={event => { }}
+                disabled={fullRoom(roomPeople, el) || remainGuest <= 0}//人數滿
+                onChange={event => handleOnChange(event, el.ui_id)}
                 onBlur={event => { }}
               />
             </div>

@@ -5,7 +5,7 @@ const CustomInputNumber = (props) => {
   const [inputNumber, setInputNumber] = useState(value || 0);
   const [timerId, setTimerId] = useState(null);
   const minDisabled = useMemo(() => { return inputNumber <= min }, [min, inputNumber])
-  const maxDisabled = useMemo(() => { return inputNumber >= max }, [max, inputNumber])
+  const maxDisabled = useMemo(() => { return inputNumber >= max || disabled }, [max, inputNumber, disabled])
   useEffect(() => {
     if (minDisabled || maxDisabled) {
       stopCalculate()
@@ -62,6 +62,11 @@ const CustomInputNumber = (props) => {
     onChange(event)
   }
 
+  const handleChangeInput = (event) => {
+    const value = parseInt(event.target.value, 10) || 0;
+    setInputNumber(value)
+  }
+
   return (
     <div className="inputBox">
       <button
@@ -80,7 +85,7 @@ const CustomInputNumber = (props) => {
         value={inputNumber}
         min={min}
         max={max}
-        onChange={() => { }}
+        onChange={handleChangeInput}
         onBlur={handleOnBlur}
       />
       <button
